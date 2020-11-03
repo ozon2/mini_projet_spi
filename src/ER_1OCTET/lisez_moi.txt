@@ -1,0 +1,8 @@
+Dans ce répertoire, il faut compléter le fichier "er_1octet.vhd" en développant
+son architecture.
+
+Un test simple est fourni avec des assertions, permettant de valider plus facilement.
+
+Vous avez aussi les fichiers nécessaires pour simuler un composant avec le
+script n7xilinxhelper et visualiser les valeurs des signaux (fichier output.vcd,
+visualisation avec gtkwave sous linux).
