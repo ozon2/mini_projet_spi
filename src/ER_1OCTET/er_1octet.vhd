@@ -33,7 +33,9 @@ begin
     if (rst = '0') then
 
       etat <= attente;
-      sclk <= '1';
+      sclk <= '1'; 
+			
+			-- mise à zéro de tous les signaux et variables
 			mosi <= '0';
 			dout <= "00000000";
 			busy <= '0';
@@ -44,17 +46,17 @@ begin
 
       case etat is
 			
-        when attente  =>
+        when attente =>
           if (en = '1') then
 						busy <= '1';
 						sclk <= '0';
-						registre := din;
+						registre := din;        -- On copie din dans un registre car on a pas de garantie que din sera constant lors de la capture
 						cpt := 7;
-						mosi <= registre(cpt);
+						mosi <= registre(cpt);	-- Pour ne pas perdre un cycle d'horloge on envoie le premier bit ici
 						etat <= capturer_bit;
 					end if; --en
 					
-        when capturer_bit  =>
+        when capturer_bit =>
 					sclk <= '1';
 					registre(cpt) := miso;
 					if (cpt = 0) then
