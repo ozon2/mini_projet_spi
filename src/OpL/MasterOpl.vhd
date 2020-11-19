@@ -22,7 +22,7 @@ end MasterOpl;
 architecture behavior of MasterOpl is
 
     -- Echange d'un octet
-    component er_1octet port map( 
+    component er_1octet port(
         rst : in std_logic ;
         clk : in std_logic ;
         en : in std_logic ;
@@ -36,16 +36,19 @@ architecture behavior of MasterOpl is
     end component;
     
     -- L'octet à émettre (v1, v2, ou 0)
-    signal din : std_logic_vector(7 downto 0) := (others => '0');
+    signal din_er : std_logic_vector(7 downto 0) := (others => 'U');
     
     -- L’octet reçu une fois l’émission/réception terminée
-    signal dout : std_logic_vector(7 downto 0) := (others => '0');
+    signal dout_er : std_logic_vector(7 downto 0) := (others => 'U');
     
     -- Indique que le composant est occupé à émettre/réceptionner (actif à ’1’)
-    signal busy : out std_logic;
+    signal busy_er : std_logic;
+		
+		-- Entrée de er_1octet
+		signal en_er : std_logic := '0';
     
     -- Etats possibles du Master
-    type t_etat is (attente, echange);
+    type t_etat is (repos, attente, echange);
 
     -- Etat actuel
     signal etat : t_etat;
@@ -62,12 +65,12 @@ begin
         sclk=>sclk,
         mosi=>mosi,
         dout=>dout_er,
-        busy=>busy_er,
+        busy=>busy_er
     );
     
 
     -- Envoi des données à l'esclave et récupération des résultats
-    echange: process (clk, rst)
+    master: process (clk, rst)
     
         -- Compteur décrémenté pendant l'attente
         variable cpt : natural := 0;
@@ -76,13 +79,13 @@ begin
         variable num_octet : natural := 0;
         
         -- Nombre d'octets total à envoyer
-        constant NB_OCTETS : int := 3;
+        constant NB_OCTETS : natural := 3;
         
         -- Nombre de cycles d'horloge nécessaire pour que l'esclave soit prêt
-        constant ATTENTE_ESCLAVE : int := 10;
+        constant ATTENTE_ESCLAVE : natural := 10;
         
         -- Nombre de cycles d'horloge à attendre avant l'envoi de l'octet suivant
-        constant ATTENTE_ENVOI : int := 3;
+        constant ATTENTE_ENVOI : natural := 2;
     
     begin
 
@@ -95,6 +98,7 @@ begin
             val_or <= "00000000";
             val_xor <= "00000000";
             busy <= '0';
+						en_er <= '0';
 
         elsif (rising_edge(clk)) then
     
@@ -132,8 +136,7 @@ begin
                     end if;
                         
                 when echange =>
-
-                    if (!busy_er) then                  -- On vérifie que er_1octet a bien terminé son échange
+                    if (busy_er = '0' and en_er = '0') then             -- On vérifie que er_1octet a bien terminé son échange
                         case num_octet is
                             when 0 =>
                                 val_and <= dout_er;     -- Réception du 1er octet
@@ -146,11 +149,15 @@ begin
                                 ss <= '1';              -- Terminer la transmission
                                 busy <= '0';            -- Le maitre n'est plus occupé
                                 etat <= repos;          -- Retour dans l'état repos jusqu'à la prochaine transmission
+																en_er <= '0';
                             when others => null;
                         end case;
                     
                         num_octet := num_octet + 1;
                         cpt := ATTENTE_ENVOI;           -- Attendre avant l'échange du prochain octet
+												
+										else
+										    en_er <= '0';  -- Nécessaire pour différencier le début et la fin d'un échange
                     end if;
                     
             end case;
