@@ -9,10 +9,10 @@ entity MasterOpl is
          en : in std_logic;                             -- Indique qu’un ordre d’échange (émission/réception) d’1 octet est passé (actif à ’1’)
          v1 : in std_logic_vector (7 downto 0);         -- 1er octet opérande
          v2 : in std_logic_vector(7 downto 0);          -- 2ème octet opérande
-         miso : in std_logic;                           -- Master Input Slave Output (produit par SlaveOpl)
+         miso : in std_logic;                           -- Master Input Slave Output (produit par l'esclave)
          ss   : out std_logic;                          -- Slave Select (actif à ’0’)
-         sclk : out std_logic;                          -- Serial clock
-         mosi : out std_logic;                          -- Master Output Slave Input 
+         sclk : out std_logic;                          -- Serial clock (produit par le maître)
+         mosi : out std_logic;                          -- Master Output Slave Input (produit par le maître)
          val_and : out std_logic_vector (7 downto 0);   -- v1 and v2
          val_or : out std_logic_vector (7 downto 0);    -- v1 or v2
          val_xor : out std_logic_vector (7 downto 0);   -- v1 xor v2
