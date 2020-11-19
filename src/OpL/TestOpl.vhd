@@ -112,59 +112,59 @@ BEGIN
 		ss => ss
 		);
 
-   -- Clock process definitions
-   clk_process :process
-   begin
-		clk <= '0';
-		wait for clk_period/2;
-		clk <= '1';
-		wait for clk_period/2;
-   end process;
+    -- Clock process definitions
+    clk_process :process
+    begin
+        clk <= '0';
+        wait for clk_period/2;
+        clk <= '1';
+        wait for clk_period/2;
+    end process;
 
-   -- Stimulus process
-   stim_proc: process
-   begin		
-      -- hold reset state for 100 ns.
-			rst <= '0';
-      wait for 100 ns;
-			rst <= '1';
+    -- Stimulus process
+    stim_proc: process
+    begin		
+        -- hold reset state for 100 ns.
+            rst <= '0';
+        wait for 100 ns;
+            rst <= '1';
 
-      wait for clk_period*10;
+        wait for clk_period*10;
 
-      -- insert stimulus here
-			
-			-- test 1 : val_and = "00000000", val_or = "11111111", val_xor = "11111111"
-			v1 <= "00000000";
-			v2 <= "11111111";
-			en <= '1';						 -- Début de l'échange entre le maître et l'esclave
-			
-			wait until busy = '1'; -- On attend que l'échange commence
-			en <= '0';						 -- On désactive le composant
-			
-			-- Arrivée des valeurs initiales de val_and, val_or et val_xor
-			
-			wait until busy = '0'; -- On attend que l'échange se termine avant le test suivant
-			
-			-- test 2 : val_and = "01000000", val_or = "11111011", val_xor = "10111011"
-			v1 <= "11010001";
-			v2 <= "01101010";
-			en <= '1';
-			
-			wait until busy = '1';
-			en <= '0';
-			
-			-- Arrivée des valeurs de val_and, val_or et val_xor du test 1
-			
-			wait until busy = '0';
-			
-			en <= '1';
-			
-			wait until busy = '1';
-			en <= '0';
-			
-			-- Arrivée des valeurs de val_and, val_or et val_xor du test 2
+        -- insert stimulus here
 
-      wait;
-   end process;
+        -- test 1 : val_and = "00000000", val_or = "11111111", val_xor = "11111111"
+        v1 <= "00000000";
+        v2 <= "11111111";
+        en <= '1';				 -- Début de l'échange entre le maître et l'esclave
+
+        wait until busy = '1';   -- On attend que l'échange commence
+        en <= '0';				 -- On désactive le composant
+
+        -- Arrivée des valeurs initiales de val_and, val_or et val_xor
+
+        wait until busy = '0';   -- On attend que l'échange se termine avant le test suivant
+
+        -- test 2 : val_and = "01000000", val_or = "11111011", val_xor = "10111011"
+        v1 <= "11010001";
+        v2 <= "01101010";
+        en <= '1';
+
+        wait until busy = '1';
+        en <= '0';
+
+        -- Arrivée des valeurs de val_and, val_or et val_xor du test 1
+
+        wait until busy = '0';
+
+        en <= '1';
+
+        wait until busy = '1';
+        en <= '0';
+
+        -- Arrivée des valeurs de val_and, val_or et val_xor du test 2
+
+        wait;
+    end process;
 
 END;
