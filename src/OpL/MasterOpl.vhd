@@ -43,9 +43,9 @@ architecture behavior of MasterOpl is
     
     -- Indique que le composant est occupé à émettre/réceptionner (actif à ’1’)
     signal busy_er : std_logic;
-		
-		-- Entrée de er_1octet
-		signal en_er : std_logic := '0';
+
+    -- Entrée de er_1octet
+    signal en_er : std_logic := '0';
     
     -- Etats possibles du Master
     type t_etat is (repos, attente, echange);
@@ -136,7 +136,7 @@ begin
                     end if;
                         
                 when echange =>
-                    if (busy_er = '0' and en_er = '0') then             -- On vérifie que er_1octet a bien terminé son échange
+                    if (busy_er = '0' and en_er = '0') then  -- On vérifie que er_1octet a bien terminé son échange
                         case num_octet is
                             when 0 =>
                                 val_and <= dout_er;     -- Réception du 1er octet
@@ -149,15 +149,15 @@ begin
                                 ss <= '1';              -- Terminer la transmission
                                 busy <= '0';            -- Le maitre n'est plus occupé
                                 etat <= repos;          -- Retour dans l'état repos jusqu'à la prochaine transmission
-																en_er <= '0';
+                                en_er <= '0';           -- Fin de l'échange, on peut désactiver er_1octet
                             when others => null;
                         end case;
                     
                         num_octet := num_octet + 1;
                         cpt := ATTENTE_ENVOI;           -- Attendre avant l'échange du prochain octet
-												
-										else
-										    en_er <= '0';  -- Nécessaire pour différencier le début et la fin d'un échange
+                            
+                    else
+                        en_er <= '0';                   -- Nécessaire pour différencier le début et la fin d'un échange
                     end if;
                     
             end case;
