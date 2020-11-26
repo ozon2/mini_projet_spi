@@ -85,11 +85,11 @@ begin
         
         -- Nombre de cycles d'horloge nécessaire pour que l'esclave soit prêt
 				-- "The minimum recommended amount of time between the SS pin going low and the start of data transmission on the bus is 15μs."
-        constant ATTENTE_ESCLAVE : natural := 10;
+        constant ATTENTE_ESCLAVE : natural := 13;
         
         -- Nombre de cycles d'horloge à attendre avant l'envoi de l'octet suivant
 				-- "The minimum recommended amount of time between the end of one byte being shifted and the beginning of the next is 10μs."
-        constant ATTENTE_ENVOI : natural := 2;
+        constant ATTENTE_ENVOI : natural := 8;
     
     begin
 
@@ -98,11 +98,13 @@ begin
             -- Réinitialiser les signaux
             etat <= repos;
             ss <= '1';
-            val_and <= "00000000";
-            val_or <= "00000000";
-            val_xor <= "00000000";
             busy <= '0';
 						en_er <= '0';
+						x <= (others => '0');
+						y <= (others => '0');
+						btn1 <= '0';
+						btn2 <= '0';
+						btnj <= '0';
 
         elsif (rising_edge(clk)) then
     
@@ -146,19 +148,19 @@ begin
                                 x(7 downto 0) <= dout_er;     -- Réception du 1er octet : l'octet de poids faible de la coordonnée x du joystick
                                 etat <= attente;
                             when 1 =>
-                                x(15 downto 8) <= dout_er;    -- Réception du 2ème octet : l'octet de poids fort de la coordonnée x du joystick
+                                x(9 downto 8) <= dout_er(1 downto 0);    -- Réception du 2ème octet : l'octet de poids fort de la coordonnée x du joystick
                                 etat <= attente;
                             when 2 =>
                                 y(7 downto 0) <= dout_er;    	-- Réception du 3ème octet : l'octet de poids faible de la coordonnée y du joystick
                                 etat <= attente;
 														when 3 =>
-																x(15 downto 8) <= dout_er;    -- Réception du 4ème octet : l'octet de poids fort de la coordonnée y du joystick
+																x(9 downto 8) <= dout_er(1 downto 0);    -- Réception du 4ème octet : l'octet de poids fort de la coordonnée y du joystick
 																etat <= attente;
 														when 4 =>
 																-- Réception du 5ème octet : les boutons du joystick
-																btnj <= dout_er(1);
-																btn1 <= dout_er(2);
-																btn2 <= dout_er(3);
+																btnj <= dout_er(0);
+																btn1 <= dout_er(1);
+																btn2 <= dout_er(2);
 																ss <= '1';              -- Terminer la transmission ("The SS pin should be returned high after communication has been completed.")
                                 busy <= '0';            -- Le maitre n'est plus occupé
                                 etat <= repos;          -- Retour dans l'état repos jusqu'à la prochaine transmission

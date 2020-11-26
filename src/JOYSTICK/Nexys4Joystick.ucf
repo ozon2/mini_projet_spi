@@ -4,10 +4,10 @@
 ## - rename the used signals according to the project
 
 ## Joystick
-NET "ss" LOC = "PA7" | IOSTANDARD = LVCMOS33;
-NET "mosi" LOC = "PA6" | IOSTANDARD = LVCMOS33;
-NET "miso" LOC = "PA5" | IOSTANDARD = LVCMOS33;
-NET "sclk" LOC = "PA4" | IOSTANDARD = LVCMOS33;
+NET "ss" LOC = "B13" | IOSTANDARD = "LVCMOS33";
+NET "mosi" LOC = "F14" | IOSTANDARD = "LVCMOS33";
+NET "miso" LOC = "D17" | IOSTANDARD = "LVCMOS33";
+NET "sclk" LOC = "E17" | IOSTANDARD = "LVCMOS33";
 
 ## Clock signal
 NET "mclk"      LOC = "E3"	| IOSTANDARD = "LVCMOS33";	#Bank = 35, Pin name = IO_L12P_T1_MRCC_35,					Sch name = CLK100MHZ

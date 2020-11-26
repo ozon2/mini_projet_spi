@@ -76,31 +76,28 @@ architecture synthesis of Nexys4Joystick is
 		);
 	END COMPONENT;
 	
-	signal x : out std_logic_vector(15 downto 0);
-	signal y : out std_logic_vector(15 downto 0);
-	signal btn1 : out std_logic;
-	signal btn2 : out std_logic;
-	signal btnj : out std_logic;
+	signal x : std_logic_vector(15 downto 0);
+	signal y : std_logic_vector(15 downto 0);
+	signal btn1 : std_logic;
+	signal btn2 : std_logic;
+	signal btnj : std_logic;
+	signal clk1MHz : std_logic;
 
 begin
 
-  -- valeurs des sorties (à modifier)
-
-  -- convention afficheur 7 segments 0 => allumé, 1 => éteint
-  ssg <= (others => '1');
-  -- aucun afficheur sélectionné
-  an(7 downto 0) <= (others => '1');
-  -- 16 leds éteintes
-  led(15 downto 0) <= (others => '0');
+  -- valeurs des sorties
+	
+  -- leds éteintes
+  led(15 downto 4) <= (others => '0');
 
   -- connexion du (des) composant(s) avec les ports de la carte
   
 	Inst_MasterJoystick: MasterJoystick PORT MAP(
-		rst => not btnR,
+		rst => not btnC,
 		clk => clk1MHz,
 		en => swt(0),
-		led1 => btnC,
-		led2 => btnU,
+		led1 => btnU,
+		led2 => btnL,
 		miso => miso,
 		ss => ss,
 		sclk => sclk,
@@ -117,23 +114,23 @@ begin
 	GENERIC MAP(100)
 	PORT MAP(
 		clk => mclk,
-		reset => not btnR,
+		reset => not btnC,
 		nclk => clk1MHz
 	);
 	
 	Inst_All7Segments: All7Segments PORT MAP(
 		clk => mclk,
-		reset => not btnR,
+		reset => not btnC,
 		e0 => x(15 downto 12),
-		e1 => x(12 downto 8),
+		e1 => x(11 downto 8),
 		e2 => x(7 downto 4),
 		e3 => x(3 downto 0),
 		e4 => y(15 downto 12),
-		e5 => y(12 downto 8),
+		e5 => y(11 downto 8),
 		e6 => y(7 downto 4),
 		e7 => y(3 downto 0),
 		an => ssg(7 downto 0),
-		ssg => an => an(7 downto 0)
+		ssg => an(7 downto 0)
 	);
 
 end synthesis;
