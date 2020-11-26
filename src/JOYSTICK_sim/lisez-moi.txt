@@ -1,0 +1,24 @@
+Pour implémenter le MasterJoystick sans avoir le joystick pour le tester, nous
+vous fournissons un composant SlaveJoystick qui le simule.
+
+Ce composant a les mêmes ports que le joystick physique (sans les alimentations)
+mais envoie toujours les mêmes valeurs: elles sont hardcodées.
+Un generic nommé "settings" permet la sélection à l'instanciation de différentes
+valeurs (entre 0 et 5), pour pouvoir faire plusieurs vérifications (en
+simulation et/ou en synthèse).
+
+Il est possible de le simuler avec le MasterJoystick que vous développez, dans
+ce cas:
+- les signaux internes "led1" et "led2" peuvent être visualisés et simulent les
+ LED présentes sur le joystick: signal à '1' <=> LED allumée
+- trois process "verif_frequency", "verif_start_time" et "verif_between_time"
+ servent à faire des vérifications sur les durées imposées par la documentation
+ PmodJSTK_rm_RevC.pdf
+
+Il est également possible de le synthétiser pour le connecter au MasterJoystick
+que vous développez, dans ce cas:
+- cela permet de vérifier le comportement du MasterJoystick sur le FPGA
+- les signaux internes "led1" et "led2" ne sont pas accessibles
+- les trois process "verif_frequency", "verif_start_time" et
+ "verif_between_time" sont ignorés lors de la synthèse, il n'y a donc pas de
+ vérification des durées imposées par la documentation PmodJSTK_rm_RevC.pdf 
