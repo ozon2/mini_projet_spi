@@ -4,21 +4,23 @@ use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 
 entity MasterJoystick is
-  port ( rst : in std_logic;                            -- Bouton C pour reset (actif à '0')
-         clk : in std_logic;                            -- Horloge intégrée 100Mhz
-         en : in std_logic;                             -- Indique qu'un ordre d'échange (émission/réception) d'1 octet est passé (actif à '1')
-         led1 : in std_logic;         									-- Contrôle la LED1 du joystick (actif à '1')
-         led2 : in std_logic;         									-- Contrôle la LED2 du joystick (actif à '1')
-         miso : in std_logic;                           -- Master Input Slave Output (produit par l'esclave)
-         ss   : out std_logic;                          -- Slave Select (actif à '0')
-         sclk : out std_logic;                          -- Serial clock (produit par le maître)
-         mosi : out std_logic;                          -- Master Output Slave Input (produit par le maître)
-         x : out std_logic_vector (15 downto 0);   			-- Coordonnée x du joystick
-         y : out std_logic_vector (15 downto 0);    		-- Coordonnée y du joystick
-         btn1 : out std_logic;  												-- Le bouton 1 du joystick, appuyé à '1'
-				 btn2 : out std_logic;  												-- Le bouton 2 du joystick, appuyé à '1'
-				 btnj : out std_logic;  												-- Le bouton sur le joystick, appuyé à '1'
-         busy : out std_logic);                         -- Indique que le composant est occupé à émettre/réceptionner (actif à '1')
+    port (
+        rst : in std_logic;                             -- Bouton C pour reset (actif à '0')
+        clk : in std_logic;                             -- Horloge intégrée 100Mhz
+        en : in std_logic;                              -- Indique qu'un ordre d'échange (émission/réception) d'1 octet est passé (actif à '1')
+        led1 : in std_logic;                            -- Contrôle la LED1 du joystick (actif à '1')
+        led2 : in std_logic;                            -- Contrôle la LED2 du joystick (actif à '1')
+        miso : in std_logic;                            -- Master Input Slave Output (produit par l'esclave)
+        ss   : out std_logic;                           -- Slave Select (actif à '0')
+        sclk : out std_logic;                           -- Serial clock (produit par le maître)
+        mosi : out std_logic;                           -- Master Output Slave Input (produit par le maître)
+        x : out std_logic_vector (15 downto 0);         -- Coordonnée x du joystick
+        y : out std_logic_vector (15 downto 0);         -- Coordonnée y du joystick
+        btn1 : out std_logic;                           -- Le bouton 1 du joystick, appuyé à '1'
+        btn2 : out std_logic;                           -- Le bouton 2 du joystick, appuyé à '1'
+        btnj : out std_logic;                           -- Le bouton sur le joystick, appuyé à '1'
+        busy : out std_logic                            -- Indique que le composant est occupé à émettre/réceptionner (actif à '1')
+    );
 end MasterJoystick;
 
 architecture behavior of MasterJoystick is
@@ -73,7 +75,7 @@ begin
 
     -- Envoi des données à l'esclave et récupération des résultats
     master: process (clk, rst)
-    
+
         -- Compteur décrémenté pendant l'attente
         variable cpt : natural := 0;
         
@@ -84,13 +86,13 @@ begin
         constant NB_OCTETS : natural := 3;
         
         -- Nombre de cycles d'horloge nécessaire pour que l'esclave soit prêt
-				-- "The minimum recommended amount of time between the SS pin going low and the start of data transmission on the bus is 15μs."
+                -- "The minimum recommended amount of time between the SS pin going low and the start of data transmission on the bus is 15μs."
         constant ATTENTE_ESCLAVE : natural := 13;
         
         -- Nombre de cycles d'horloge à attendre avant l'envoi de l'octet suivant
-				-- "The minimum recommended amount of time between the end of one byte being shifted and the beginning of the next is 10μs."
+                -- "The minimum recommended amount of time between the end of one byte being shifted and the beginning of the next is 10μs."
         constant ATTENTE_ENVOI : natural := 8;
-    
+
     begin
 
         if (rst = '0') then
@@ -99,15 +101,15 @@ begin
             etat <= repos;
             ss <= '1';
             busy <= '0';
-						en_er <= '0';
-						x <= (others => '0');
-						y <= (others => '0');
-						btn1 <= '0';
-						btn2 <= '0';
-						btnj <= '0';
+            en_er <= '0';
+            x <= (others => '0');
+            y <= (others => '0');
+            btn1 <= '0';
+            btn2 <= '0';
+            btnj <= '0';
 
         elsif (rising_edge(clk)) then
-    
+
             case (etat) is
             
                 when repos =>
@@ -126,11 +128,11 @@ begin
                 
                     if (cpt = 0) then                   -- Fin de l'attente
                         case num_octet is
-                            when 0 =>										-- Envoi du 1er octet qui permet d'allumer les LEDs du joystick
-																din_er(0) <= led1;
-																din_er(1) <= led2;
+                            when 0 =>					-- Envoi du 1er octet qui permet d'allumer les LEDs du joystick
+                                din_er(0) <= led1;
+                                din_er(1) <= led2;
                                 din_er(7 downto 2) <= "100000";
-                            when others => null;				-- "The remaining four bytes that are shifted in are ignored by the PmodJSTK."
+                            when others => null;		-- "The remaining four bytes that are shifted in are ignored by the PmodJSTK."
                         end case;
                         
                         en_er <= '1';                   -- Activer er_1octet pour échanger l'octet
@@ -142,26 +144,26 @@ begin
                     end if;
                         
                 when echange =>
-                    if (busy_er = '0' and en_er = '0') then  -- On vérifie que er_1octet a bien terminé son échange
+                    if (busy_er = '0' and en_er = '0') then             -- On vérifie que er_1octet a bien terminé son échange
                         case num_octet is
                             when 0 =>
-                                x(7 downto 0) <= dout_er;     -- Réception du 1er octet : l'octet de poids faible de la coordonnée x du joystick
+                                x(7 downto 0) <= dout_er;               -- Réception du 1er octet : l'octet de poids faible de la coordonnée x du joystick
                                 etat <= attente;
                             when 1 =>
-                                x(9 downto 8) <= dout_er(1 downto 0);    -- Réception du 2ème octet : l'octet de poids fort de la coordonnée x du joystick
+                                x(9 downto 8) <= dout_er(1 downto 0);   -- Réception du 2ème octet : l'octet de poids fort de la coordonnée x du joystick
                                 etat <= attente;
                             when 2 =>
-                                y(7 downto 0) <= dout_er;    	-- Réception du 3ème octet : l'octet de poids faible de la coordonnée y du joystick
+                                y(7 downto 0) <= dout_er;               -- Réception du 3ème octet : l'octet de poids faible de la coordonnée y du joystick
                                 etat <= attente;
-									when 3 =>
-											y(9 downto 8) <= dout_er(1 downto 0);    -- Réception du 4ème octet : l'octet de poids fort de la coordonnée y du joystick
-											etat <= attente;
-									when 4 =>
-											-- Réception du 5ème octet : les boutons du joystick
-											btnj <= dout_er(0);
-											btn1 <= dout_er(1);
-											btn2 <= dout_er(2);
-											ss <= '1';              -- Terminer la transmission ("The SS pin should be returned high after communication has been completed.")
+                            when 3 =>
+                                y(9 downto 8) <= dout_er(1 downto 0);   -- Réception du 4ème octet : l'octet de poids fort de la coordonnée y du joystick
+                                etat <= attente;
+                            when 4 =>
+                                -- Réception du 5ème octet : les boutons du joystick
+                                btnj <= dout_er(0);
+                                btn1 <= dout_er(1);
+                                btn2 <= dout_er(2);
+                                ss <= '1';              -- Terminer la transmission ("The SS pin should be returned high after communication has been completed.")
                                 busy <= '0';            -- Le maitre n'est plus occupé
                                 etat <= repos;          -- Retour dans l'état repos jusqu'à la prochaine transmission
                                 en_er <= '0';           -- Fin de l'échange, on peut désactiver er_1octet
@@ -178,7 +180,7 @@ begin
             end case;
             
         end if;
-    
+
     end process;
 
 end behavior;
