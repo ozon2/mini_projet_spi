@@ -153,15 +153,15 @@ begin
                             when 2 =>
                                 y(7 downto 0) <= dout_er;    	-- Réception du 3ème octet : l'octet de poids faible de la coordonnée y du joystick
                                 etat <= attente;
-														when 3 =>
-																x(9 downto 8) <= dout_er(1 downto 0);    -- Réception du 4ème octet : l'octet de poids fort de la coordonnée y du joystick
-																etat <= attente;
-														when 4 =>
-																-- Réception du 5ème octet : les boutons du joystick
-																btnj <= dout_er(0);
-																btn1 <= dout_er(1);
-																btn2 <= dout_er(2);
-																ss <= '1';              -- Terminer la transmission ("The SS pin should be returned high after communication has been completed.")
+									when 3 =>
+											y(9 downto 8) <= dout_er(1 downto 0);    -- Réception du 4ème octet : l'octet de poids fort de la coordonnée y du joystick
+											etat <= attente;
+									when 4 =>
+											-- Réception du 5ème octet : les boutons du joystick
+											btnj <= dout_er(0);
+											btn1 <= dout_er(1);
+											btn2 <= dout_er(2);
+											ss <= '1';              -- Terminer la transmission ("The SS pin should be returned high after communication has been completed.")
                                 busy <= '0';            -- Le maitre n'est plus occupé
                                 etat <= repos;          -- Retour dans l'état repos jusqu'à la prochaine transmission
                                 en_er <= '0';           -- Fin de l'échange, on peut désactiver er_1octet

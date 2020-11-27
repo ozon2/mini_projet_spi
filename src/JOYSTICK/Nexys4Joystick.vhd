@@ -129,8 +129,8 @@ begin
 		e5 => y(11 downto 8),
 		e6 => y(7 downto 4),
 		e7 => y(3 downto 0),
-		an => ssg(7 downto 0),
-		ssg => an(7 downto 0)
+		an => an(7 downto 0),
+		ssg => ssg(7 downto 0)
 	);
 
 end synthesis;
